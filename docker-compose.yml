@@ -1,0 +1,60 @@
+# Entorno local completo: Postgres + 2 APIs + frontend.
+#   docker compose up --build
+# Frontend: http://localhost:5173 · Endorse API: http://localhost:3000/documentation
+# Routes API: http://localhost:8080/health
+name: reto-interseguro
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: endorse_db
+      POSTGRES_USER: endorse
+      POSTGRES_PASSWORD: endorse_local_only
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U endorse -d endorse_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  endorse-api:
+    build: ./endorse-api
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://endorse:endorse_local_only@postgres:5432/endorse_db
+      DB_RUN_MIGRATIONS: "true"
+      JWT_SECRET: local-compose-secret-change-me-0123456789
+      AUTH_CLIENT_ID: frontend-demo
+      AUTH_CLIENT_SECRET: frontend-demo-secret
+      CORS_ORIGINS: http://localhost:5173
+    ports: ["3000:3000"]
+
+  routes-api:
+    build: ./routes-api
+    environment:
+      APP_ENV: production
+      PORT: 8080
+      JWT_SECRET: local-compose-secret-change-me-0123456789
+      AUTH_CLIENT_ID: frontend-demo
+      AUTH_CLIENT_SECRET: frontend-demo-secret
+      CORS_ORIGINS: http://localhost:5173
+    ports: ["8080:8080"]
+
+  frontend:
+    build: ./frontend
+    depends_on: [endorse-api, routes-api]
+    environment:
+      # URLs vistas desde el navegador del usuario, no desde la red de Docker.
+      ENDORSE_API_URL: http://localhost:3000
+      ROUTES_API_URL: http://localhost:8080
+      CLIENT_ID: frontend-demo
+      CLIENT_SECRET: frontend-demo-secret
+    ports: ["5173:8080"]
+
+volumes:
+  pgdata:
