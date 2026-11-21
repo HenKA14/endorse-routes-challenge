@@ -1,0 +1,19 @@
+{
+  "Miraflores": { "San Isidro": 7, "Barranco": 3, "Surquillo": 2 },
+  "San Isidro": { "Miraflores": 7, "Lince": 4, "San Borja": 5, "Magdalena del Mar": 4 },
+  "Barranco": { "Miraflores": 3, "Surco": 5, "Chorrillos": 3 },
+  "Lince": { "San Isidro": 4, "Surco": 6, "Jesús María": 3, "La Victoria": 4 },
+  "Surco": { "Barranco": 5, "Lince": 6, "Ate": 10, "San Borja": 4, "La Molina": 7, "Chorrillos": 6, "Surquillo": 4 },
+  "Ate": { "Surco": 10, "La Molina": 6, "San Luis": 5 },
+  "Surquillo": { "Miraflores": 2, "Surco": 4, "San Borja": 3 },
+  "San Borja": { "San Isidro": 5, "Surco": 4, "Surquillo": 3, "San Luis": 3, "La Victoria": 4 },
+  "La Molina": { "Surco": 7, "Ate": 6 },
+  "Chorrillos": { "Barranco": 3, "Surco": 6 },
+  "Jesús María": { "Lince": 3, "Pueblo Libre": 3, "Cercado de Lima": 4, "Magdalena del Mar": 3 },
+  "Magdalena del Mar": { "San Isidro": 4, "Jesús María": 3, "Pueblo Libre": 2, "San Miguel": 3 },
+  "Pueblo Libre": { "Jesús María": 3, "Magdalena del Mar": 2, "San Miguel": 3, "Cercado de Lima": 5 },
+  "San Miguel": { "Magdalena del Mar": 3, "Pueblo Libre": 3 },
+  "La Victoria": { "Lince": 4, "San Borja": 4, "Cercado de Lima": 3, "San Luis": 3 },
+  "San Luis": { "Ate": 5, "San Borja": 3, "La Victoria": 3 },
+  "Cercado de Lima": { "Jesús María": 4, "Pueblo Libre": 5, "La Victoria": 3 }
+}
