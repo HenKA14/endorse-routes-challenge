@@ -1,0 +1,17 @@
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+/** Tipo de endoso (ej. CambioFrecuencia). */
+@Entity({ name: 'endorsement_type' })
+export class EndorsementTypeModel {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'varchar', length: 50, unique: true })
+  code: string;
+
+  @Column({ type: 'varchar', length: 120 })
+  name: string;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
+}
