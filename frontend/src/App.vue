@@ -11,7 +11,7 @@ import { RouterLink, RouterView } from 'vue-router';
         </span>
         <div>
           <strong>Evolution</strong>
-          <span class="muted small">Consola técnica</span>
+          <span class="small sub">Consola técnica</span>
         </div>
       </div>
       <nav aria-label="Principal">
@@ -27,18 +27,24 @@ import { RouterLink, RouterView } from 'vue-router';
 </template>
 
 <style scoped>
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
-.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 10; }
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 68px; }
 .brand { display: flex; align-items: center; gap: 10px; }
-.brand div { display: grid; line-height: 1.2; }
+.brand div { display: grid; line-height: 1.15; }
+.brand strong { color: var(--accent); font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.brand .sub { color: var(--text-2); }
 .logo { color: var(--accent); display: inline-flex; }
-nav { display: flex; gap: 4px; }
-nav a { color: var(--muted); text-decoration: none; padding: 7px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; }
-nav a:hover { color: var(--text); background: var(--surface-2); }
-nav a.router-link-active { color: var(--accent); background: var(--accent-soft); }
+nav { display: flex; gap: 8px; align-self: stretch; }
+nav a {
+  display: inline-flex; align-items: center; color: var(--text-2); text-decoration: none;
+  padding: 0 12px; font-size: 16px; border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+nav a:hover { color: var(--accent); }
+nav a.router-link-active { color: var(--accent); font-weight: 600; border-bottom-color: var(--accent); }
 .footer { padding: 32px 16px; text-align: center; }
 @media (max-width: 560px) {
-  .brand .muted { display: none; }
-  nav a { padding: 6px 8px; font-size: 13px; }
+  .brand .sub { display: none; }
+  nav { gap: 2px; }
+  nav a { padding: 0 6px; font-size: 14px; }
 }
 </style>

@@ -99,7 +99,7 @@ const nodeList = computed(() =>
 
 <style scoped>
 .graph { width: 100%; height: auto; display: block; }
-.edge { stroke: var(--border); stroke-width: 2; }
+.edge { stroke: var(--border-strong); stroke-width: 2; }
 .edge.on { stroke: var(--accent); stroke-width: 4; }
 .arrowhead { fill: var(--muted); }
 .weight { font-size: 11px; fill: var(--muted); text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
@@ -107,7 +107,7 @@ const nodeList = computed(() =>
 .node { fill: var(--surface); stroke: var(--muted); stroke-width: 2; }
 .node.on { stroke: var(--accent); stroke-width: 3; }
 .node.depot { fill: var(--accent); stroke: var(--accent); }
-.node.accident { fill: var(--danger); stroke: var(--danger); }
-.label { font-size: 12px; fill: var(--text); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
-.label.strong { font-weight: 700; }
+.node.accident { fill: var(--pink); stroke: var(--pink); }
+.label { font-size: 13px; fill: var(--text-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.label.strong { font-weight: 700; fill: var(--text); }
 </style>

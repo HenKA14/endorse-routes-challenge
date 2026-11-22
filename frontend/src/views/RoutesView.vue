@@ -198,7 +198,7 @@ async function submit() {
         <div class="card">
           <div class="card-head">
             <h2>Red de distritos</h2>
-            <span class="muted small">● base &nbsp; <span style="color: var(--danger)">●</span> accidente</span>
+            <span class="muted small"><span style="color: var(--accent)">●</span> base &nbsp; <span style="color: var(--pink)">●</span> accidente</span>
           </div>
           <div class="card-body">
             <GraphCanvas :graph="graph" :depots="depots" :accident="accidentLocation" :path="result?.path" />
