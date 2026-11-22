@@ -1,0 +1,59 @@
+# Render Blueprint: demo pública de las dos APIs en el plan gratuito.
+# (El despliegue objetivo sigue siendo GCP Cloud Run: ver docs/DEPLOY.md.)
+#
+# Render construye cada Dockerfile desde GitHub. Los servicios gratuitos se
+# duermen tras 15 min sin tráfico y la primera petición tarda ~1 min en
+# despertarlos. La base de datos es Neon (Postgres gratuito).
+#
+# Al crear el Blueprint, Render pide los valores marcados con `sync: false`.
+
+envVarGroups:
+  - name: reto-auth
+    envVars:
+      - key: AUTH_CLIENT_ID
+        value: frontend-demo
+      # Credencial pública del SPA (ver README › Seguridad). Se copia también
+      # en las variables del sitio de Netlify (CLIENT_SECRET).
+      - key: AUTH_CLIENT_SECRET
+        generateValue: true
+
+services:
+  - type: web
+    name: routes-api
+    runtime: docker
+    plan: free
+    region: virginia
+    rootDir: routes-api
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    buildFilter:
+      paths: ["routes-api/**"]
+    envVars:
+      - fromGroup: reto-auth
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS # URL del sitio de Netlify, ej. https://<sitio>.netlify.app
+        sync: false
+
+  - type: web
+    name: endorse-api
+    runtime: docker
+    plan: free
+    region: virginia
+    rootDir: endorse-api
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    buildFilter:
+      paths: ["endorse-api/**"]
+    envVars:
+      - fromGroup: reto-auth
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DB_SSL
+        value: "true"
+      - key: DB_RUN_MIGRATIONS
+        value: "true"
+      - key: DATABASE_URL # connection string de Neon
+        sync: false
+      - key: CORS_ORIGINS # URL del sitio de Netlify
+        sync: false

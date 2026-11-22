@@ -1,0 +1,24 @@
+# Netlify: demo pública del frontend (Vue) en el plan gratuito.
+# (El despliegue objetivo sigue siendo GCP Cloud Run con nginx: ver docs/DEPLOY.md.)
+#
+# Variables a definir en Netlify › Site configuration › Environment variables:
+#   ENDORSE_API_URL  https://endorse-api-xxxx.onrender.com
+#   ROUTES_API_URL   https://routes-api-xxxx.onrender.com
+#   CLIENT_ID        frontend-demo
+#   CLIENT_SECRET    el AUTH_CLIENT_SECRET generado en Render (grupo reto-auth)
+
+[build]
+  base = "frontend"
+  publish = "dist"
+  # Tras el build, genera dist/config.js y dist/_headers (CSP) con esas variables:
+  # equivalente a lo que hace nginx en el contenedor.
+  command = "npm run build && node scripts/netlify-postbuild.mjs"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA (vue-router en modo history): las rutas que no son archivos van a index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
