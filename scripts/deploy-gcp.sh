@@ -9,17 +9,26 @@
 # habilitado (Cloud Run lo exige aunque se quede en el free tier) y la cadena de
 # conexión de Neon.
 #
-# Uso:
-#   export GCP_PROJECT=mi-proyecto
-#   export NEON_DATABASE_URL='postgres://user:pass@ep-xxx.neon.tech/endorse_db?sslmode=require'
+# Uso (las variables pueden ir en un archivo .env.deploy en la raíz del repo,
+# que está en .gitignore, para no escribir la contraseña de Neon en la terminal):
+#   GCP_PROJECT=mi-proyecto
+#   NEON_DATABASE_URL='postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require'
 #   ./scripts/deploy-gcp.sh
+#
+# Para mantenerse en la capa gratuita: escala a cero, máximo 2 instancias,
+# solo la última versión de cada secreto (límite gratis: 6 versiones activas) y
+# limpieza de imágenes viejas en Artifact Registry (límite gratis: 0,5 GB).
 set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [[ -f "$ROOT/.env.deploy" ]]; then
+  set -a; source "$ROOT/.env.deploy"; set +a
+fi
 
 : "${GCP_PROJECT:?Define GCP_PROJECT}"
 : "${NEON_DATABASE_URL:?Define NEON_DATABASE_URL (cadena de conexión de Neon)}"
 REGION="${GCP_REGION:-us-central1}"
 CLIENT_ID="${AUTH_CLIENT_ID:-frontend-demo}"
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 gcloud config set project "$GCP_PROJECT" >/dev/null
 
@@ -35,6 +44,11 @@ upsert_secret() {
   else
     printf '%s' "$value" | gcloud secrets create "$name" --replication-policy=automatic --data-file=- >/dev/null
   fi
+  # Destruye las versiones anteriores: solo la última cuenta como activa.
+  gcloud secrets versions list "$name" --filter='state!=DESTROYED' --sort-by=~createTime \
+    --format='value(name.basename())' | tail -n +2 | while read -r v; do
+    gcloud secrets versions destroy "$v" --secret="$name" --quiet >/dev/null
+  done
 }
 
 echo "==> Secretos en Secret Manager"
@@ -76,6 +90,18 @@ echo "==> CORS: las APIs solo aceptan el origen del frontend"
 for svc in routes-api endorse-api; do
   gcloud run services update "$svc" --region "$REGION" --update-env-vars "CORS_ORIGINS=${FRONTEND_URL}" --quiet >/dev/null
 done
+
+echo "==> Artifact Registry: conservar solo las 2 imágenes más recientes por servicio"
+POLICY_FILE="$(mktemp)"
+cat > "$POLICY_FILE" <<'JSON'
+[
+  {"name": "keep-recent", "action": {"type": "Keep"}, "mostRecentVersions": {"keepCount": 2}},
+  {"name": "delete-old", "action": {"type": "Delete"}, "condition": {"tagState": "ANY", "olderThan": "1d"}}
+]
+JSON
+gcloud artifacts repositories set-cleanup-policies cloud-run-source-deploy \
+  --location "$REGION" --policy "$POLICY_FILE" --no-dry-run --quiet >/dev/null
+rm -f "$POLICY_FILE"
 
 cat <<EOF
 
