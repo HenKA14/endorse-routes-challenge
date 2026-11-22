@@ -22,7 +22,7 @@ services:
     name: routes-api
     runtime: docker
     plan: free
-    region: virginia
+    region: ohio
     rootDir: routes-api
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
@@ -39,7 +39,7 @@ services:
     name: endorse-api
     runtime: docker
     plan: free
-    region: virginia
+    region: ohio
     rootDir: endorse-api
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health

@@ -15,7 +15,7 @@ Hay dos configuraciones en el repo:
 
 > En el plan gratuito, Render duerme las APIs tras 15 minutos sin tráfico. La primera petición después tarda cerca de un minuto; las siguientes responden normal.
 
-1. **Neon**: crea un proyecto (región AWS US East) y copia la *connection string*.
+1. **Neon**: crea un proyecto (región AWS US East 2, Ohio, la misma de las APIs en Render) y copia la *connection string*.
 2. **Render** › *New* › *Blueprint* › elige este repositorio. Render lee `render.yaml` y crea `routes-api`, `endorse-api` y el grupo de variables `reto-auth` (con `AUTH_CLIENT_SECRET` y los `JWT_SECRET` generados al azar). Te pide:
    - `DATABASE_URL`: la connection string de Neon.
    - `CORS_ORIGINS` (en las dos APIs): la URL que tendrá el sitio de Netlify, por ejemplo `https://endorse-routes-challenge.netlify.app`.
