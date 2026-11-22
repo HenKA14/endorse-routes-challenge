@@ -1,4 +1,39 @@
-# Despliegue en GCP (capa gratuita)
+# Despliegue
+
+Hay dos configuraciones en el repo:
+
+| | Despliegue objetivo | Demo pública |
+|---|---|---|
+| Frontend | GCP Cloud Run (nginx) | **Netlify** ([netlify.toml](../netlify.toml)) |
+| APIs | GCP Cloud Run | **Render** ([render.yaml](../render.yaml)) |
+| Base de datos | Neon | Neon |
+| Secretos | Secret Manager | Variables de entorno de Render y Netlify |
+
+**Por qué la demo no está en GCP:** Cloud Run exige una cuenta de facturación con tarjeta aunque el uso quede en la capa gratuita. Netlify, Render y Neon tienen planes gratuitos sin tarjeta. La configuración de GCP queda completa y lista: cambiar de plataforma no toca el código, porque las tres apps son contenedores configurados por variables de entorno.
+
+## Demo pública: Netlify + Render + Neon
+
+> En el plan gratuito, Render duerme las APIs tras 15 minutos sin tráfico. La primera petición después tarda cerca de un minuto; las siguientes responden normal.
+
+1. **Neon**: crea un proyecto (región AWS US East) y copia la *connection string*.
+2. **Render** › *New* › *Blueprint* › elige este repositorio. Render lee `render.yaml` y crea `routes-api`, `endorse-api` y el grupo de variables `reto-auth` (con `AUTH_CLIENT_SECRET` y los `JWT_SECRET` generados al azar). Te pide:
+   - `DATABASE_URL`: la connection string de Neon.
+   - `CORS_ORIGINS` (en las dos APIs): la URL que tendrá el sitio de Netlify, por ejemplo `https://endorse-routes-challenge.netlify.app`.
+
+   Las migraciones corren al arrancar `endorse-api`.
+3. **Netlify** › *Add new project* › *Import from GitHub* › este repositorio. `netlify.toml` ya define la carpeta, el build y la redirección de la SPA. En *Environment variables* agrega:
+   - `ENDORSE_API_URL` y `ROUTES_API_URL`: las URLs `https://….onrender.com` de cada API.
+   - `CLIENT_ID`: `frontend-demo`.
+   - `CLIENT_SECRET`: el valor de `AUTH_CLIENT_SECRET` del grupo `reto-auth` en Render.
+
+   Al compilar, [frontend/scripts/netlify-postbuild.mjs](../frontend/scripts/netlify-postbuild.mjs) genera `config.js` y `_headers` con la misma CSP que usa nginx (`connect-src` limitado a las dos APIs).
+4. Si el nombre del sitio de Netlify no quedó igual al que pusiste en `CORS_ORIGINS`, corrígelo en Render y redespliega las APIs.
+
+Cada push a `main` redespliega solo lo que cambió: Render filtra por carpeta (`buildFilter`) y Netlify recompila el frontend.
+
+---
+
+# Despliegue objetivo: GCP (capa gratuita)
 
 ## Arquitectura de despliegue
 
@@ -29,10 +64,13 @@ Artifact Registry ──► guarda las imágenes
    ```bash
    gcloud auth login
    ```
-3. Ejecuta el script:
+3. Crea `.env.deploy` en la raíz del repo (está en `.gitignore`), así la contraseña no queda en el historial de la terminal:
    ```bash
-   export GCP_PROJECT=<tu-proyecto>
-   export NEON_DATABASE_URL='postgres://<user>:<pass>@<host>.neon.tech/endorse_db?sslmode=require'
+   GCP_PROJECT=<tu-proyecto>
+   NEON_DATABASE_URL='postgresql://<user>:<pass>@<host>.neon.tech/neondb?sslmode=require'
+   ```
+4. Ejecuta el script:
+   ```bash
    ./scripts/deploy-gcp.sh
    ```
 
@@ -43,6 +81,7 @@ El script ([scripts/deploy-gcp.sh](../scripts/deploy-gcp.sh)):
 3. Despliega `routes-api` y `endorse-api` con `--source`. Las migraciones de BD corren al arrancar (`DB_RUN_MIGRATIONS=true`) y son idempotentes.
 4. Despliega el `frontend` inyectándole las URLs de las APIs en runtime (`config.js`).
 5. Restringe el `CORS_ORIGINS` de las APIs a la URL del frontend.
+6. Para no salir de la capa gratuita: deja solo la última versión de cada secreto (4 activas, el límite gratis es 6) y configura una política de limpieza que conserva las 2 imágenes más recientes por servicio en Artifact Registry (límite gratis: 0,5 GB).
 
 ## Migraciones en un equipo real
 

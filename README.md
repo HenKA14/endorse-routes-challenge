@@ -154,4 +154,7 @@ POST /v1/auth/token · GET /health
 
 ## Despliegue
 
-**GCP Cloud Run** (las 3 apps) + **Neon** (Postgres gratis, porque Cloud SQL no tiene free tier) + Secret Manager. Un script hace todo y no requiere Docker local (usa Cloud Build): [scripts/deploy-gcp.sh](scripts/deploy-gcp.sh). Detalle en [docs/DEPLOY.md](docs/DEPLOY.md).
+- **Despliegue objetivo: GCP Cloud Run** (las 3 apps) + **Neon** (Postgres gratis, porque Cloud SQL no tiene free tier) + Secret Manager. Un script hace todo y no requiere Docker local (usa Cloud Build): [scripts/deploy-gcp.sh](scripts/deploy-gcp.sh).
+- **Demo pública: Netlify** (frontend) + **Render** (APIs, con los mismos Dockerfiles) + **Neon**, todo en planes gratuitos sin tarjeta: [netlify.toml](netlify.toml) y [render.yaml](render.yaml). En Render las APIs se duermen sin tráfico, así que la primera petición puede tardar cerca de un minuto.
+
+Detalle y pasos en [docs/DEPLOY.md](docs/DEPLOY.md).
