@@ -13,6 +13,8 @@ Hay dos configuraciones en el repo:
 
 ## Demo pública: Netlify + Render + Neon
 
+Publicada en **https://endorse-routes-challenge.netlify.app** (APIs: https://endorse-api.onrender.com y https://routes-api-zbxi.onrender.com).
+
 > En el plan gratuito, Render duerme las APIs tras 15 minutos sin tráfico. La primera petición después tarda cerca de un minuto; las siguientes responden normal.
 
 1. **Neon**: crea un proyecto (región AWS US East 2, Ohio, la misma de las APIs en Render) y copia la *connection string*.
@@ -25,11 +27,12 @@ Hay dos configuraciones en el repo:
    - `ENDORSE_API_URL` y `ROUTES_API_URL`: las URLs `https://….onrender.com` de cada API.
    - `CLIENT_ID`: `frontend-demo`.
    - `CLIENT_SECRET`: el valor de `AUTH_CLIENT_SECRET` del grupo `reto-auth` en Render.
+   - `SECRETS_SCAN_OMIT_KEYS`: `CLIENT_ID,CLIENT_SECRET,ENDORSE_API_URL,ROUTES_API_URL`. Esos valores van a propósito en el `config.js` del navegador (ver el trade-off en README › Seguridad), y así el escáner de secretos de Netlify no detiene el build.
 
    Al compilar, [frontend/scripts/netlify-postbuild.mjs](../frontend/scripts/netlify-postbuild.mjs) genera `config.js` y `_headers` con la misma CSP que usa nginx (`connect-src` limitado a las dos APIs).
 4. Si el nombre del sitio de Netlify no quedó igual al que pusiste en `CORS_ORIGINS`, corrígelo en Render y redespliega las APIs.
 
-Cada push a `main` redespliega solo lo que cambió: Render filtra por carpeta (`buildFilter`) y Netlify recompila el frontend.
+Netlify recompila el frontend en cada push a `main`. Esta demo conecta Render por la URL pública del repositorio, así que las APIs se redespliegan con *Manual Deploy*. Si se conecta con la app de GitHub, Render redespliega solo la API cuya carpeta cambió (`buildFilter`).
 
 ---
 

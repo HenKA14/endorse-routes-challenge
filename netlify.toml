@@ -6,6 +6,7 @@
 #   ROUTES_API_URL   https://routes-api-xxxx.onrender.com
 #   CLIENT_ID        frontend-demo
 #   CLIENT_SECRET    el AUTH_CLIENT_SECRET generado en Render (grupo reto-auth)
+#   SECRETS_SCAN_OMIT_KEYS  CLIENT_ID,CLIENT_SECRET,ENDORSE_API_URL,ROUTES_API_URL
 
 [build]
   base = "frontend"

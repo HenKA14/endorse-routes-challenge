@@ -9,7 +9,21 @@ Monorepo con los tres ejercicios del reto:
 | [`frontend/`](frontend) | 1 y 2 · Frontend | Vue 3 · Vite · TypeScript · Vitest |
 | [`architecture/`](architecture) + [`docs/ARQUITECTURA-PRESTAMOS.md`](docs/ARQUITECTURA-PRESTAMOS.md) | 3 · Arquitectura de préstamos | draw.io (AS IS + TO BE) |
 
-Más documentación: [Modelo de datos (ER)](docs/ER.md) · [Despliegue en GCP](docs/DEPLOY.md)
+Más documentación: [Modelo de datos (ER)](docs/ER.md) · [Despliegue](docs/DEPLOY.md)
+
+## Demo en vivo
+
+**https://endorse-routes-challenge.netlify.app**
+
+| Servicio | URL | Plataforma |
+|---|---|---|
+| Frontend | https://endorse-routes-challenge.netlify.app | Netlify |
+| Endorse API | https://endorse-api.onrender.com ([Swagger](https://endorse-api.onrender.com/documentation)) | Render + Neon |
+| Routes API | https://routes-api-zbxi.onrender.com | Render |
+
+Para probarla, usa **"Cargar ejemplo del enunciado"** en cada pantalla y luego **Traducir** o **Calcular ruta**.
+
+> Las APIs están en el plan gratuito de Render y se duermen tras 15 minutos sin tráfico. La primera petición puede tardar hasta cerca de un minuto; las siguientes responden normal.
 
 ---
 
@@ -155,6 +169,6 @@ POST /v1/auth/token · GET /health
 ## Despliegue
 
 - **Despliegue objetivo: GCP Cloud Run** (las 3 apps) + **Neon** (Postgres gratis, porque Cloud SQL no tiene free tier) + Secret Manager. Un script hace todo y no requiere Docker local (usa Cloud Build): [scripts/deploy-gcp.sh](scripts/deploy-gcp.sh).
-- **Demo pública: Netlify** (frontend) + **Render** (APIs, con los mismos Dockerfiles) + **Neon**, todo en planes gratuitos sin tarjeta: [netlify.toml](netlify.toml) y [render.yaml](render.yaml). En Render las APIs se duermen sin tráfico, así que la primera petición puede tardar cerca de un minuto.
+- **[Demo pública](https://endorse-routes-challenge.netlify.app): Netlify** (frontend) + **Render** (APIs, con los mismos Dockerfiles) + **Neon**, todo en planes gratuitos sin tarjeta: [netlify.toml](netlify.toml) y [render.yaml](render.yaml). En Render las APIs se duermen sin tráfico, así que la primera petición puede tardar cerca de un minuto.
 
 Detalle y pasos en [docs/DEPLOY.md](docs/DEPLOY.md).
