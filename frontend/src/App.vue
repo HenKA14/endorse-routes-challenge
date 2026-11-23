@@ -23,7 +23,7 @@ import { RouterLink, RouterView } from 'vue-router';
   <main class="container">
     <RouterView />
   </main>
-  <footer class="container footer muted small">Reto técnico · Technical Lead</footer>
+  <footer class="container footer muted small">Reto técnico · Software Architect</footer>
 </template>
 
 <style scoped>

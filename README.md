@@ -1,4 +1,4 @@
-# Reto técnico Interseguro · Technical Lead
+# Reto técnico Interseguro · Software Architect
 
 Monorepo con los tres ejercicios del reto:
 
